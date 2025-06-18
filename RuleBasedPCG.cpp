@@ -40,6 +40,27 @@ Map cellularAutomata(const Map& currentMap, int W, int H, int R, double U)
     }
     return newMap;
 }
+void cellularAutomataInPlace(Map& map, int W, int H, int R, double U) {
+    for (int x = 0; x < H; ++x) {
+        for (int y = 0; y < W; ++y) {
+            int count = 0, total = 0;
+            for (int dx = -R; dx <= R; ++dx) {
+                for (int dy = -R; dy <= R; ++dy) {
+                    int nx = x + dx, ny = y + dy;
+                    if (nx < 0 || nx >= H || ny < 0 || ny >= W) {
+                        count++;
+                        total++;
+                    } else {
+                        count += map[nx][ny];
+                        total++;
+                    }
+                }
+            }
+            double ratio = (double)count / total;
+            map[x][y] = (ratio > U) ? 1 : 0;
+        }
+    }
+}
 
 Map drunkAgent(const Map& currentMap, int W, int H, int J, int I, int roomSizeX, int roomSizeY,
                double probGenerateRoom, double probIncreaseRoom,
@@ -142,7 +163,8 @@ int main() {
     for (int iteration = 0; iteration < numIterations; ++iteration) {
         std::cout << "\n--- Iteration " << iteration + 1 << " ---" << std::endl;
 
-        myMap = cellularAutomata(myMap, ca_W, ca_H, ca_R, ca_U);
+        //myMap = cellularAutomata(myMap, ca_W, ca_H, ca_R, ca_U);
+        cellularAutomataInPlace(myMap, ca_W, ca_H, ca_R, ca_U);
         myMap = drunkAgent(myMap, da_W, da_H, da_J, da_I, da_roomSizeX, da_roomSizeY,
                            da_probGenerateRoom, da_probIncreaseRoom,
                            da_probChangeDirection, da_probIncreaseChange,
